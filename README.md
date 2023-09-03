@@ -43,5 +43,5 @@ This project is licensed under the MIT License. For more information, see the `L
 A special thanks to the community of developers, researchers, and activists who have come together to address the pressing issue of lead contamination. Your dedication is making the world a safer place.
 
 ### 📩 Contact
-For queries, suggestions, or discussions, feel free to raise an issue in this GitHub repository or contact the maintainers directly.
+For queries, suggestions, or discussions, feel free to raise an issue in this GitHub repository or contact the maintainers directly or email info@normalcompany.co
 
