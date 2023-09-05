@@ -1,0 +1,1 @@
+# If you're planning to make the project installable via pip
