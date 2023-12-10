@@ -1,1 +1,7 @@
-# Utility functions related to the model, if any
+"""LeadListener Project.
+
+Find the lead.
+
+Author: Tyler Bolz
+Version: 0.1
+"""
