@@ -7,53 +7,66 @@ Version: 0.1
 """
 
 import tkinter as tk
-from src.starfleetsubs.gui.MenuPanel import MenuPanel
-from src.starfleetsubs.gui.OrderPanel import OrderPanel
-from src.starfleetsubs.data.Item import Item
-from src.starfleetsubs.gui.ParentPanel import ParentPanel
+from src.leadlistener.gui.input.InputPanel import InputPanel
+from src.leadlistener.model.Model import Model
+from src.leadlistener.gui.output.OutputPanel import OutputPanel
+from src.leadlistener.data.output.Result import Result
+from src.leadlistener.data.output.Results import Results
 
 
-class PrimaryWindow(tk.Tk, ParentPanel):
+class PrimaryWindow(tk.Tk):
     """Primary Window.
 
-    This is the primary window for the program.
+    This is the primary window for the program, showing the InputPanel.
     """
 
     def __init__(self) -> None:
         """Primary Window init"""
-        tk.Tk.__init__(self)
+        super().__init__()
+        self._model = Model()
+        self._results = Results()
         self.minsize(width=800, height=600)
-        self.title("Starfleet Subs")
+        self.title("Lead Listener")
 
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
-        self.grid_columnconfigure(0, weight=5)
-        self.grid_columnconfigure(1, weight=2)
 
-        self.__main = None
-        self.__sidebar = OrderPanel(self)
-        self.load_order_panel()
+        self.input_panel = None
+        self.output_panel = None
 
-        self.__sidebar.grid(row=0, column=1, padx=10, pady=10, sticky="NSEW")
+        self.load_input_panel()
+        self.load_output_panel()
 
-    def load_order_panel(self) -> None:
-        """Load Order Panel."""
-        self.load_panel(MenuPanel(self, self.__sidebar))
+    def load_input_panel(self) -> None:
+        """Load Input Panel."""
+        if self.input_panel is not None:
+            self.input_panel.destroy()
+        self.input_panel = InputPanel(self, save_callback=self.save)
+        self.input_panel.config(highlightbackground="black", highlightthickness=1)  # Add outline        
+        self.input_panel.grid(row=0, column=0, sticky="nsew")
 
-    def load_panel(self, panel):
-        """Load Panel.
+    def load_output_panel(self, text="Waiting...", lat=0.0, lon=0.0) -> None:
+        """Load Output Panel."""
+        if self.output_panel is not None:
+            self.output_panel.destroy()
+        self.output_panel = OutputPanel(self, lat=lat, lon=lon, text_variable=tk.StringVar(value=text))
+        self.output_panel.config(highlightbackground="black", highlightthickness=1)  # Add outline
+        self.output_panel.grid(row=0, column=1, sticky="nsew")
 
-        Args:
-            panel: The panel to load.
-        """
-        if self.__main is not None:
-            self.__main.destroy()
-        self.__main = panel
-        self.__main.grid(row=0, column=0, padx=10, pady=10, sticky="NSEW")
-
-    def save_item(self, item: Item) -> None:
-        """Save Item.
-
-        Args:
-            item: The item to save.
-        """
-        self.__sidebar.save_item(item)
+    def save(self) -> None:
+        """Save."""
+        self.load_output_panel(text="Processing...")
+        location_file = self.input_panel.location_file.path
+        audio_file = self.input_panel.audio_file.path
+        result = self._model.predict_pipe_type(audio_file)
+        self.load_output_panel(text=result, lat=self.input_panel.location_file.lat, lon=self.input_panel.location_file.lon)
+        result = Result()
+        result.lat = self.input_panel.location_file.lat
+        result.lon = self.input_panel.location_file.lon
+        result.type = result
+        result.confidence = 1.0
+        result.audio_file = audio_file
+        result.location_file = location_file
+        result.files_timestamp = self.input_panel.location_file.timestamp
+        self._results.add_result(result)

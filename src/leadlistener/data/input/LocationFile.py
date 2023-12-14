@@ -9,6 +9,7 @@ Version: 0.1
 from typing import List
 from src.leadlistener.data.input.InputFile import InputFile
 import datetime
+import csv
 
 
 class LocationFile(InputFile):
@@ -66,6 +67,24 @@ class LocationFile(InputFile):
         """
         return self._id
 
+    @property
+    def lat(self) -> float:
+        """Getter for the latitude.
+
+        Returns:
+            float: The latitude.
+        """
+        return self.read_from_csv(self._path, "lat")
+
+    @property
+    def lon(self) -> float:
+        """Getter for the longitude.
+
+        Returns:
+            float: The longitude.
+        """
+        return self.read_from_csv(self._path, "lon")
+
     def __str__(self) -> str:
         """Return the string representation of the object.
 
@@ -93,3 +112,19 @@ class LocationFile(InputFile):
                     and self._timestamp == value.timestamp)
         else:
             return False
+
+    def read_from_csv(self, file_path, column_name):
+        """Reads latitude from a specified column in a CSV file.
+
+        Args:
+            file_path (str): The path to the CSV file.
+            lat_column_name (str): The name of the column containing latitude values.
+
+        Returns:
+            float: The latitude value from the first row, or None if not found.
+        """
+        with open(file_path, newline='', encoding='utf-8') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                lat = row[column_name]
+                return float(lat)

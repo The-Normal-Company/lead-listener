@@ -13,3 +13,14 @@ tox
 flask
 flask-classful
 python-dotenv
+mplleaflet
+matplotlib==3.0.3
+pywebview==4.4.1
+PyAudio==0.2.13
+pandas==1.4.3
+opencv-python==4.7.0.68
+numpy==1.23.2
+matplotlib==3.6.2
+matplotlib-inline==0.1.6
+chardet==5.2.0
+charset-normalizer==2.0.12
